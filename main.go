@@ -35,7 +35,7 @@ func main() {
 	fmt.Println("WLED URL: ", configuration.Wled.Url)
 	baseUrl := configuration.Wled.Url
 
-	sleepTime := 5000 * time.Millisecond
+	sleepTime := 3000 * time.Millisecond
 
 	fmt.Println("Sending Level 0")
 	sendWledCommand(baseUrl, configuration.Wled.LevelZeroBody)
@@ -43,50 +43,52 @@ func main() {
 	time.Sleep(sleepTime)
 
 	fmt.Println("Sending Level 1")
-	sendWledCommand(configuration.Wled.Url, configuration.Wled.LevelOneBody)
+	sendWledCommand(baseUrl, configuration.Wled.LevelOneBody)
 
 	time.Sleep(sleepTime)
 
 	fmt.Println("Sending Level 2")
-	sendWledCommand(configuration.Wled.Url, configuration.Wled.LevelTwoBody)
+	sendWledCommand(baseUrl, configuration.Wled.LevelTwoBody)
 
 	time.Sleep(sleepTime)
 
 	fmt.Println("Sending Level 3")
-	sendWledCommand(configuration.Wled.Url, configuration.Wled.LevelThreeBody)
+	sendWledCommand(baseUrl, configuration.Wled.LevelThreeBody)
 
 	time.Sleep(sleepTime)
 
 	fmt.Println("Sending Level 4")
-	sendWledCommand(configuration.Wled.Url, configuration.Wled.LevelFourBody)
+	sendWledCommand(baseUrl, configuration.Wled.LevelFourBody)
 
 	time.Sleep(sleepTime)
 
 	fmt.Println("Sending Level 5")
-	sendWledCommand(configuration.Wled.Url, configuration.Wled.LevelFiveBody)
+	sendWledCommand(baseUrl, configuration.Wled.LevelFiveBody)
 
 	time.Sleep(sleepTime)
 
 	fmt.Println("Sending Level 4")
-	sendWledCommand(configuration.Wled.Url, configuration.Wled.LevelFourBody)
+	sendWledCommand(baseUrl, configuration.Wled.LevelFourBody)
 
 	time.Sleep(sleepTime)
 
 	fmt.Println("Sending Level 3")
-	sendWledCommand(configuration.Wled.Url, configuration.Wled.LevelThreeBody)
+	sendWledCommand(baseUrl, configuration.Wled.LevelThreeBody)
 
 	time.Sleep(sleepTime)
 
 	fmt.Println("Sending Level 2")
-	sendWledCommand(configuration.Wled.Url, configuration.Wled.LevelTwoBody)
+	sendWledCommand(baseUrl, configuration.Wled.LevelTwoBody)
 
 	time.Sleep(sleepTime)
 
 	fmt.Println("Sending Level 1")
-	sendWledCommand(configuration.Wled.Url, configuration.Wled.LevelOneBody)
+	sendWledCommand(baseUrl, configuration.Wled.LevelOneBody)
+
+	time.Sleep(sleepTime)
 
 	fmt.Println("Sending Level 0")
-	sendWledCommand(configuration.Wled.Url, configuration.Wled.LevelZeroBody)
+	sendWledCommand(baseUrl, configuration.Wled.LevelZeroBody)
 
 	fmt.Println("Complete")
 }
@@ -97,10 +99,16 @@ func sendWledCommand(baseUrl string, body string) error {
 	fullUrl := "http://" + baseUrl + "/json/state"
 
 	req, _ := http.NewRequest("POST", fullUrl, bytes.NewBuffer(jsonBody))
+	req.Header.Set("Content-Type", "application/json")
+
 	client := &http.Client{}
+	client.Timeout = time.Second * 5
+
 	resp, err := client.Do(req)
 	if resp != nil {
 		println("Response code " + strconv.Itoa(resp.StatusCode))
+	} else {
+		println("Error code " + err.Error())
 	}
 	return err
 }
