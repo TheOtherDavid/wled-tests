@@ -102,7 +102,8 @@ func sendWledCommand(baseUrl string, body string) error {
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
-	client.Timeout = time.Second * 5
+	//Before I figured out how to close connections, setting a timeout also solved the issue.
+	//client.Timeout = time.Second * 5
 
 	resp, err := client.Do(req)
 	if resp != nil {
@@ -110,5 +111,8 @@ func sendWledCommand(baseUrl string, body string) error {
 	} else {
 		println("Error code " + err.Error())
 	}
+	//Explicitly close connection
+	defer resp.Body.Close()
+
 	return err
 }
